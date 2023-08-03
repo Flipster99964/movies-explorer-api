@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const helmet = require('helmet');
+const cors = require('cors');
 const { errors } = require('celebrate');
 
 
@@ -17,6 +18,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const limiter = require('./utils/rateLimiter');
 const router = require('./routes');
 
+const allowedCors = require('./utils/constants');
 
 const app = express();
 
@@ -27,6 +29,11 @@ app.use(limiter);
 app.use(helmet());
 
 app.use(bodyParser.json());
+
+app.use(cors({
+  origin: allowedCors,
+}));
+
 
 mongoose.connect(MONGO_LINK, {
   useNewUrlParser: true,
