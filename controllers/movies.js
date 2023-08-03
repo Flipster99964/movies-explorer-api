@@ -14,7 +14,7 @@ const createMovie = (req, res, next) => {
   const owner = req.user._id;
   const {
     country, director, duration, year, description, image,
-    trailerLink, thumbnail, nameRU, nameEN,
+    trailerLink, thumbnail, movieId, nameRU, nameEN,
   } = req.body;
   Movie.create(
     {
@@ -27,6 +27,7 @@ const createMovie = (req, res, next) => {
       trailerLink,
       thumbnail,
       owner,
+      movieId,
       nameRU,
       nameEN,
     },
@@ -44,21 +45,17 @@ const createMovie = (req, res, next) => {
 const deleteMovie = (req, res, next) => {
   const { movieId } = req.params;
   Movie
-    .findById(movieId)
+    .findById(filmId)
     .orFail(new NotFoundError('Фильм с указанным id не найден.'))
     .then((movie) => {
-      if (JSON.stringify(movie.owner) !== JSON.stringify(req.user._id)) {
+        if (movie.owner.toString() !== req.user._id.toString()) {
         return next(new ForbiddenError('Нельзя удалить чужой фильм.'));
       }
-      return Movie.findByIdAndRemove(movieId)
-        .then(() => res.send({ message: 'Фильм удалён.' }));
+      return Movie.remove()
+        .then(() => res.send({ message: 'Фильм удалён.' }))
+        .catch((err) => next(err));
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Передан некорректный id фильма.'));
-      }
-      return next(err);
-    });
+    .catch((err) => next(err));
 };
 
 module.exports = {
