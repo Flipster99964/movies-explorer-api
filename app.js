@@ -2,11 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
 const helmet = require('helmet');
 const cors = require('cors');
 const { errors } = require('celebrate');
-
 
 const {
   PORT = 3000,
@@ -35,12 +33,7 @@ app.use(cors({
 }));
 
 
-mongoose.connect(MONGO_LINK, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-  useUnifiedTopology: true,
-});
+mongoose.connect(MONGO_LINK);
 
 app.use(router);
 app.use(errorLogger);
